@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixa d'água</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 21.875rem;
+            height: 31.25rem;
+            background-color: #A9A9A9; /* Azul similar ao polietileno */
+            border-radius: 20px;
+            position: relative;
+            margin-top: 20px; /* Espaçamento entre o título e a caixa d'água */
+        }
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #66ccff; /* Azul claro para representar a água */
+            border-radius: 0 0 20px 20px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 18px;
+            margin: 0;
+        }
+        span {
+            font-weight: bold;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CAIXA DÁGUA - MINI CURSO IoT - UFC</h1>
+    <p>Nível de água: <span id="variableValue">0</span>%</p>
+    <div class="container">
+        <div class="water" id="waterLevel" style="height: 0;"></div>
+    </div>
+
+    <script>
+        const altura = 81
+        fetch('https://api.thingspeak.com/channels/2544431/fields/3?api_key=BIQ0SL1NYFAPJB2L')
+        .then(response=>response.json())
+        .then(data =>{
+            const gap = 21
+            const profundidade = data.feeds[data.feeds.length -1].field3
+            const percent = ((altura - profundidade) / (altura - gap)) * 100
+            return percent
+        }).then(percent => {
+            console.log(percent)
+            console.log(percent)
+        const variableValue = document.getElementById("variableValue");
+        const waterLevel = document.getElementById("waterLevel");
+
+            const value = percent.toFixed(2);
+            variableValue.textContent = percent.toFixed(2);
+            const waterHeight = percent; // ajuste conforme necessário
+            waterLevel.style.height = `${waterHeight}%`;
+        })
+ 
+    </script>
+</body>
+</html>
