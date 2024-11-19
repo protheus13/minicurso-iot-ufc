@@ -52,12 +52,12 @@
     </div>
 
     <script>
-        const altura = 81
-        fetch('https://api.thingspeak.com/channels/2544431/fields/3?api_key=BIQ0SL1NYFAPJB2L')
+        const altura = 81 //Altura total da base do reservatório até o sensor ultrawssônico;
+        fetch('https://api.thingspeak.com/channels/CANAL_API/fields/1?api_key=CHAVE_API')
         .then(response=>response.json())
         .then(data =>{
-            const gap = 21
-            const profundidade = data.feeds[data.feeds.length -1].field3
+            const gap = 21 //Espaço entre o sensor ultrassônico e o nível máximo que a água pode atingir
+            const profundidade = data.feeds[data.feeds.length -1].field1
             const percent = ((altura - profundidade) / (altura - gap)) * 100
             return percent
         }).then(percent => {

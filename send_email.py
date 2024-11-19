@@ -3,19 +3,20 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+# Tem que desabilitar acesso por apps menos seguros nas configurações do e-mail utilizado.
 def sendEmail():
     # Configurações do servidor de e-mail
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
-    smtp_user = 'infra.sobral@ifce.edu.br'
-    smtp_password = 'ifceSobral2018'
+    smtp_user = 'email@gmail.com'
+    smtp_password = 'senhadoemail'
 
     # Informações do e-mail
-    from_email = 'infra.sobral@ifce.edu.br'
-    to_email = ['geraldo.martins@ifce.edu.br','infra.sobral@ifce.edu.br','francisco.eliel@ifce.edu.br', 'dap.sobral@ifce.edu.br']
+    from_email = 'email_de_origem'
+    to_email = ['email1@gmail.com','email2@gmail.com']
 
-    subject = 'CAIXA DÁGUA COM NÍVEL BAIXO'
-    body = 'EdvaldoBot informa que a caixa dágua principal do IFCE-Sobral se encontra com nível baixo. favor verificar app. link: https://waterbox-ifce.vercel.app/'
+    subject = 'INFORME CAIXA DÁGUA'
+    body = 'Informamos que a caixa dágua se encontra com nível baixo. Favor verificar app. link: link_da_vercel'
 
     # Cria a mensagem do e-mail
     msg = MIMEMultipart()

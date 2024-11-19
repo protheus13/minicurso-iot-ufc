@@ -17,8 +17,8 @@
 // #include <ESP8266WiFi.h>
 #include <WiFi.h>
 
-const char* ssid     = "LADER"; // Change this to your WiFi SSID
-const char* password = "lader2024"; // Change this to your WiFi password
+const char* ssid     = "LOGIN"; // Change this to your WiFi SSID
+const char* password = "senha"; // Change this to your WiFi password
 
 const char* host = "api.thingspeak.com"; // This should not be changed
 const int httpPort = 80; // This should not be changed
