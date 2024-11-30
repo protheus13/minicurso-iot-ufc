@@ -30,15 +30,17 @@ Agora clique em Ferramentas → Placa → Gerenciador de Placas e busque por ESP
 1. Configure o script send_email com as configurações do e-mail;
 2. Leve o script para um servidor linux e altere o nível de acesso do usuário com o comando: sudo chmod +x /send_email.py;
 2. Crie um script com extensão .sh e insira os comandos a seguir:
+    
     #!/bin/bash
 
     python3 send_email.py
     echo "E-mail enviado via tarefas agendadas em: $(date)" > ~/
+
 3. Salve o arquivo .sh e altera o nível de acesso com o comando sudo chmod +x arquivo.sh
 4. Digite o comando: crontab -e
 5. Navegue até a ultima linha do arquivo e insira o comando a seguir para que seja efetuada a leitura da variável a cada 30 minutos: 
 
-*/30 * * * * ~/./arquivo.sh
+    */30 * * * * ~/./arquivo.sh
 
 6. Salve o arquivo e execute o comando: sudo systemctl restart cron
 7. Pronto, sua aplicação está rodando com link para visualização e alertas automatizados via e-mail.
