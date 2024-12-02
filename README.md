@@ -1,7 +1,7 @@
 # Mini Curso IoT - UFC 2024.
 Repositório com scripts para o mini curso de IoT na UFC.
 
-> Abaixo estão algumas orientações para realização da prática que será realizada no mini curso, seguidas dos scripts que serão utilizados.
+> Abaixo estão algumas orientações para realização da prática que será realizada no mini curso, seguidas dos scripts que serão utilizados. Para realização da Prática I deve-se seguir a orientação que está no script .ino no wifimanager.
 
 ## Instalações Necessárias
 ### Instalando a IDE do arduino
