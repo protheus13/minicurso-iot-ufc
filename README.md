@@ -1,7 +1,18 @@
-# Mini Curso IoT - UFC 2024.
+# Mini Curso IoT - UFC 2025.
 Repositório com scripts para o mini curso de IoT na UFC.
 
 > Abaixo estão algumas orientações para realização da prática que será realizada no mini curso, seguidas dos scripts que serão utilizados. Para realização da Prática I deve-se seguir a orientação que está no script .ino no wifimanager.
+
+## Práticas
+### Prática I
+
+> Faça um gerenciador de Wi-Fi no seu ESP32 para gerenciar o login em redes sem fio em seus projetos IoT. Para isso, abre a pasta "PRÁTICA_I" e siga as instruções do script.
+
+### Prática II
+
+> Nessa prática, iremos desenvolver um medidor de nível sem fio para reservatórios  (silos, caixas dágua e tanques) utilizando sensor ultrassônico. Além disso, a verificação do nível terá acesso remoto e também vamos realizar a automação de notificações via e-mail de forma gratuita.
+
+OBS: Para realização das práticas, faça as instalações necessárias e crie credenciais de usuário nas plataformas gratuitas abordadas.
 
 ## Instalações Necessárias
 ### Instalando a IDE do arduino
