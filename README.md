@@ -38,13 +38,13 @@ Agora clique em Ferramentas → Placa → Gerenciador de Placas e busque por ESP
 2. Vincular GitHub com a VERCEL e puxar repositório com página .html.
 
 ### Automatizar e-mails de alerta
-1. Configure o script send_email com as configurações do e-mail;
-2. Leve o script para um servidor linux e altere o nível de acesso do usuário com o comando: sudo chmod +x /send_email.py;
+1. Configure o script send_email com as configurações do e-mail e o script.py com as informações de API e do reservatório escolhido e o percentual para notificações;
+2. Leve o script para um servidor linux e altere o nível de acesso do usuário com o comando: sudo chmod +x /script.py;
 2. Crie um script com extensão .sh e insira os comandos a seguir:
     
     #!/bin/bash
 
-    python3 send_email.py
+    python3 script.py
     echo "E-mail enviado via tarefas agendadas em: $(date)" > ~/
 
 3. Salve o arquivo .sh e altera o nível de acesso com o comando sudo chmod +x arquivo.sh
