@@ -21,7 +21,7 @@ Na Arduino IDE, abra a janela de Preferências e digite as URLs abaixo no campo 
 
 Link ESP32 board: https://dl.espressif.com/dl/package_esp32_index.json
 
-Agora clique em Ferramentas → Placa → Gerenciador de Placas e busque por ESP32. Em seguida, clique em Instalar. Reinicie o arduino IDE. Agora vá em Ferramentas → Placa e selecione a placa Node MCU ESP32.
+Agora clique em Ferramentas → Placa → Gerenciador de Placas e busque por ESP32. Em seguida, clique em Instalar. Reinicie o arduino IDE. Agora vá em Ferramentas → Placa e selecione a placa ESP32 Dev Module.
 
 ### Crie uma conta no ThinksPeak
 
