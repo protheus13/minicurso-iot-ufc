@@ -1,77 +1,738 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caixa d'água</title>
+    <title>Minicurso IoT</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        aqua: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-color: #f0f0f0;
+        /* Smooth liquid height transition */
+        .water-fill {
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .container {
-            width: 21.875rem;
-            height: 31.25rem;
-            background-color: #A9A9A9; /* Azul similar ao polietileno */
-            border-radius: 20px;
-            position: relative;
-            margin-top: 20px; /* Espaçamento entre o título e a caixa d'água */
+
+        /* SVG Wave Animations */
+        @keyframes waveMotion1 {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-25%); }
+            100% { transform: translateX(-50%); }
         }
-        .water {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #66ccff; /* Azul claro para representar a água */
-            border-radius: 0 0 20px 20px;
+        @keyframes waveMotion2 {
+            0% { transform: translateX(-50%); }
+            50% { transform: translateX(-25%); }
+            100% { transform: translateX(0); }
         }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
+        @keyframes floatBubble {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
         }
-        p {
-            font-size: 18px;
-            margin: 0;
+
+        .wave-layer-1 {
+            animation: waveMotion1 6s linear infinite;
         }
-        span {
-            font-weight: bold;
-            font-size: 24px;
+        .wave-layer-2 {
+            animation: waveMotion2 4s linear infinite;
+        }
+
+        .bubble {
+            animation: floatBubble 4s ease-in infinite;
+        }
+
+        /* Glow effects */
+        .glow-aqua {
+            box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.25);
+        }
+        .dark .glow-aqua {
+            box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.15);
         }
     </style>
 </head>
-<body>
-    <h1>CAIXA DÁGUA - MINI CURSO IoT - UFC</h1>
-    <p>Nível de água: <span id="variableValue">0</span>%</p>
-    <div class="container">
-        <div class="water" id="waterLevel" style="height: 0;"></div>
+<body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300">
+
+    <div class="min-h-full flex flex-col justify-between">
+        <!-- TOP NAVIGATION / HEADER -->
+        <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <!-- Logo & Brand Name -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-aqua-600 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-aqua-500/20">
+                        <i class="fa-solid font-bold text-lg fa-faucet-drip"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                            Minicurso IoT - UFC
+                        </h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            API ThingSpeak: Canal XXXXX (Campo X)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Actions Header -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <!-- Timer Badge -->
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
+                        <i class="fa-regular fa-clock text-aqua-500"></i>
+                        <span>Atualiza em <strong id="header-countdown" class="text-slate-900 dark:text-white font-mono">30</strong>s</span>
+                    </div>
+
+                    <!-- Config Trigger -->
+                    <button id="btn-open-config" title="Configurações do Reservatório" class="p-2.5 text-slate-600 dark:text-slate-300 hover:text-aqua-600 dark:hover:text-aqua-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+
+                    <!-- Theme Toggle -->
+                    <button id="btn-theme-toggle" title="Alternar Tema" class="p-2.5 text-slate-600 dark:text-slate-300 hover:text-aqua-600 dark:hover:text-aqua-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            <!-- Grid Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+                
+                <!-- LEFT COLUMN: VISUAL WATER TANK DISPLAY (5 cols on lg) -->
+                <section class="lg:col-span-5 flex flex-col items-center">
+                    <div class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm glow-aqua relative overflow-hidden flex flex-col items-center">
+                        
+                        <!-- Header status tag inside tank card -->
+                        <div class="w-full flex justify-between items-center mb-6">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                Reservatório Físico
+                            </span>
+                            <span id="tank-status-badge" class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <span id="tank-status-text">Carregando...</span>
+                            </span>
+                        </div>
+
+                        <!-- TANK GRAPHIC CONTAINER -->
+                        <div class="relative w-64 sm:w-72 h-96 flex justify-center items-center my-2">
+                            
+                            <!-- Sensor Top Housing Cap -->
+                            <div class="absolute -top-4 z-30 w-56 h-7 bg-gradient-to-r from-slate-300 via-slate-100 to-slate-300 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 rounded-t-lg border-b border-slate-400/30 shadow-md flex items-center justify-between px-4">
+                                <span class="text-[10px] font-mono text-slate-500 dark:text-slate-300">Sensor ultrassônico</span>
+                                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
+                            </div>
+
+                            <!-- Tank Glass Body Container -->
+                            <div class="relative w-full h-full rounded-3xl border-4 border-slate-300 dark:border-slate-700 bg-slate-100/40 dark:bg-slate-900/60 overflow-hidden shadow-inner backdrop-blur-sm flex flex-col justify-end">
+                                
+                                <!-- Physical Level Ticks (Gap = 19cm, Altura = 81cm) -->
+                                <div class="absolute right-3 top-0 bottom-0 py-4 z-30 flex flex-col justify-between text-[10px] font-semibold text-slate-400 dark:text-slate-500 select-none pointer-events-none font-mono">
+                                    <div class="flex items-center gap-1"><span class="w-2 h-0.5 bg-slate-300 dark:bg-slate-700"></span>100% (19cm)</div>
+                                    <div class="flex items-center gap-1"><span class="w-2 h-0.5 bg-slate-300 dark:bg-slate-700"></span>75%</div>
+                                    <div class="flex items-center gap-1"><span class="w-2 h-0.5 bg-slate-300 dark:bg-slate-700"></span>50%</div>
+                                    <div class="flex items-center gap-1"><span class="w-2 h-0.5 bg-slate-300 dark:bg-slate-700"></span>25%</div>
+                                    <div class="flex items-center gap-1"><span class="w-2 h-0.5 bg-slate-300 dark:bg-slate-700"></span>0% (81cm)</div>
+                                </div>
+
+                                <!-- Horizontal Guide Lines -->
+                                <div class="absolute inset-x-0 top-[25%] border-b border-dashed border-slate-300/40 dark:border-slate-700/40 z-10"></div>
+                                <div class="absolute inset-x-0 top-[50%] border-b border-dashed border-slate-300/40 dark:border-slate-700/40 z-10"></div>
+                                <div class="absolute inset-x-0 top-[75%] border-b border-dashed border-slate-300/40 dark:border-slate-700/40 z-10"></div>
+
+                                <!-- Dynamic Center Percentage Box -->
+                                <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                                    <div class="bg-white/90 dark:bg-slate-950/85 backdrop-blur-md px-5 py-3 rounded-2xl shadow-lg border border-slate-200/60 dark:border-slate-800 text-center">
+                                        <div id="tank-percent-display" class="text-3xl sm:text-4xl font-extrabold text-aqua-600 dark:text-aqua-400 font-mono tracking-tight">
+                                            0.00%
+                                        </div>
+                                        <div id="tank-water-height-subdisplay" class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
+                                            Coluna: -- cm / 62 cm
+                                        </div>
+                                        <!-- Stagnation Alert Banner inside Badge -->
+                                        <div id="stagnant-warning-tag" class="hidden mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-white tracking-wide uppercase">
+                                            Estagnado no Limite
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- WATER BODY (DYNAMIC HEIGHT CLAMPED 0% - 100%) -->
+                                <div id="water-fill-element" class="water-fill relative w-full bg-gradient-to-t from-aqua-700 via-aqua-500 to-cyan-400 shadow-lg" style="height: 0%;">
+                                    
+                                    <!-- Animated Waves SVG Top Wrapper -->
+                                    <div class="absolute -top-[18px] left-0 right-0 w-[200%] h-6 pointer-events-none overflow-hidden">
+                                        <!-- Wave Layer 1 -->
+                                        <svg class="wave-layer-1 absolute top-0 left-0 w-full h-full opacity-70 fill-cyan-300 dark:fill-cyan-400" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                                            <path d="M0,0 C150,90 350,-40 500,40 C650,120 900,-20 1200,40 L1200,120 L0,120 Z"></path>
+                                        </svg>
+                                        <!-- Wave Layer 2 -->
+                                        <svg class="wave-layer-2 absolute top-0 left-0 w-full h-full opacity-90 fill-aqua-400 dark:fill-aqua-500" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                                            <path d="M0,40 C200,-30 400,80 600,20 C800,-40 1000,70 1200,10 L1200,120 L0,120 Z"></path>
+                                        </svg>
+                                    </div>
+
+                                    <!-- Floating Bubbles -->
+                                    <div class="absolute bottom-4 left-1/4 w-2 h-2 rounded-full bg-white/40 bubble" style="animation-delay: 0s;"></div>
+                                    <div class="absolute bottom-8 left-1/2 w-3 h-3 rounded-full bg-white/30 bubble" style="animation-delay: 1.2s;"></div>
+                                    <div class="absolute bottom-2 left-3/4 w-1.5 h-1.5 rounded-full bg-white/50 bubble" style="animation-delay: 2.5s;"></div>
+                                </div>
+
+                            </div>
+                            
+                            <!-- Tank Base Stand -->
+                            <div class="absolute -bottom-3 z-30 w-60 h-4 bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 rounded-b-lg shadow-md"></div>
+                        </div>
+
+                        <!-- Physical Param Specs -->
+                        <div class="w-full mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs text-slate-500 dark:text-slate-400">
+                            <div>
+                                <span class="block text-[11px] text-slate-400">Altura Total (vazio):</span>
+                                <strong class="text-slate-700 dark:text-slate-200 font-mono">altura = 81 cm</strong>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[11px] text-slate-400">Gap Superior (cheio):</span>
+                                <strong class="text-slate-700 dark:text-slate-200 font-mono">gap = 19 cm</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RIGHT COLUMN: DASHBOARD METRICS & CONTROL (7 cols on lg) -->
+                <section class="lg:col-span-7 space-y-6">
+                    
+                    <!-- TOP METRICS CARDS GRID (2x2) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        
+                        <!-- Card 1: Nível de Água (%) -->
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:border-aqua-400/50 transition">
+                            <div class="flex items-center justify-between text-slate-400 dark:text-slate-500 mb-2">
+                                <span class="text-xs font-semibold uppercase tracking-wider">Nível de Água</span>
+                                <div class="w-8 h-8 rounded-lg bg-aqua-50 dark:bg-aqua-950/60 text-aqua-600 dark:text-aqua-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-water-ladder text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span id="card-level-percent" class="text-3xl font-bold text-slate-900 dark:text-white font-mono">0.00%</span>
+                            </div>
+                            <p id="card-raw-percent-sub" class="text-xs text-slate-500 dark:text-slate-400 mt-2 font-mono">
+                                Cálculo: ((81 - profundidade) / 62) * 100
+                            </p>
+                        </div>
+
+                        <!-- Card 2: Coluna d'Água Física (cm) -->
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:border-aqua-400/50 transition">
+                            <div class="flex items-center justify-between text-slate-400 dark:text-slate-500 mb-2">
+                                <span class="text-xs font-semibold uppercase tracking-wider">Coluna d'Água (Útil)</span>
+                                <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-ruler-vertical text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span id="card-water-cm" class="text-3xl font-bold text-slate-900 dark:text-white font-mono">0.0</span>
+                                <span class="text-sm font-semibold text-slate-500">cm</span>
+                                <span class="text-xs text-slate-400 font-mono ml-1">/ 62 cm max</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                Altura real de água no reservatório.
+                            </p>
+                        </div>
+
+                        <!-- Card 3: Leitura do Sensor (field3) -->
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:border-aqua-400/50 transition">
+                            <div class="flex items-center justify-between text-slate-400 dark:text-slate-500 mb-2">
+                                <span class="text-xs font-semibold uppercase tracking-wider">Distância do Sensor</span>
+                                <div class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-tower-broadcast text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span id="card-sensor-depth" class="text-3xl font-bold text-slate-900 dark:text-white font-mono">--</span>
+                                <span class="text-sm font-semibold text-slate-500">cm</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                Dado bruto retornado em <code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">field3</code>.
+                            </p>
+                        </div>
+
+                        <!-- Card 4: Volume Estimado & Leitura -->
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:border-aqua-400/50 transition">
+                            <div class="flex items-center justify-between text-slate-400 dark:text-slate-500 mb-2">
+                                <span class="text-xs font-semibold uppercase tracking-wider">Volume Estimado</span>
+                                <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-glass-water text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span id="card-volume-liters" class="text-3xl font-bold text-slate-900 dark:text-white font-mono">0</span>
+                                <span class="text-sm font-semibold text-slate-500">L</span>
+                            </div>
+                            <p id="card-last-update-time" class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                Sincronizando com servidor em nuvem...
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- AUTO UPDATE COUNTDOWN BAR & MANUAL ACTION CARD -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <i id="sync-icon" class="fa-solid fa-sync text-aqua-500"></i>
+                                    Atualização Automática API (a cada 30s)
+                                </h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                    Consulta direta em tempo real: <code class="text-aqua-600 dark:text-aqua-400">api.thingspeak.com</code>
+                                </p>
+                            </div>
+
+                            <!-- Manual Update Button -->
+                            <button id="btn-refresh-now" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-aqua-600 to-cyan-600 hover:from-aqua-500 hover:to-cyan-500 text-white font-semibold text-sm rounded-xl shadow-md shadow-aqua-600/20 active:scale-95 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                <span>Atualizar Agora</span>
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar for Countdown -->
+                        <div class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                            <div id="countdown-progress-bar" class="bg-gradient-to-r from-aqua-500 to-cyan-400 h-full transition-all duration-1000 ease-linear" style="width: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- TESTING & SIMULATION PANEL (Boundary limits test) -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-vial text-aqua-500"></i>
+                                Teste de Limites de Estagnação (Mín/Máx)
+                            </h3>
+                            <span class="text-xs text-slate-400">Modo de Simulação</span>
+                        </div>
+
+                        <!-- Simulation Preset Buttons -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                            <!-- Above max limit (Profundidade < gap 19cm) -->
+                            <button onclick="simulateSensorDepth(10)" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs font-semibold rounded-xl border border-amber-200 dark:border-amber-900/40 transition">
+                                10 cm (&gt;100% Ext.)
+                            </button>
+                            <!-- Upper exact bound (19cm) -->
+                            <button onclick="simulateSensorDepth(19)" class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold rounded-xl border border-emerald-200 dark:border-emerald-900/40 transition">
+                                19 cm (Cheio 100%)
+                            </button>
+                            <!-- Intermediate distance -->
+                            <button onclick="simulateSensorDepth(50)" class="px-3 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-xl border border-blue-200 dark:border-blue-900/40 transition">
+                                50 cm (Médio 50%)
+                            </button>
+                            <!-- Below min limit (Profundidade > altura 81cm) -->
+                            <button onclick="simulateSensorDepth(95)" class="px-3 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-semibold rounded-xl border border-red-200 dark:border-red-900/40 transition">
+                                95 cm (&lt;0% Ext.)
+                            </button>
+                        </div>
+
+                        <!-- Manual Sensor Depth Slider -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>Simular Distância Medida pelo Sensor (cm)</span>
+                                <span id="sim-depth-label" class="font-mono font-bold text-slate-700 dark:text-slate-300">-- cm</span>
+                            </div>
+                            <input id="sensor-slider" type="range" min="0" max="100" value="50" class="w-full accent-aqua-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-mono pt-1">
+                                <span>0cm (&gt;100%)</span>
+                                <span>19cm (100%)</span>
+                                <span>50cm (50%)</span>
+                                <span>81cm (0%)</span>
+                                <span>100cm (&lt;0%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HISTORICAL LOG TABLE -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-slate-400"></i>
+                                Histórico de Respostas da API ThingSpeak
+                            </span>
+                            <span class="text-xs font-normal text-slate-400">Últimos 5 registros</span>
+                        </h3>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                                        <th class="pb-2 font-medium">Horário</th>
+                                        <th class="pb-2 font-medium">field1 (cm)</th>
+                                        <th class="pb-2 font-medium">Bruto (%)</th>
+                                        <th class="pb-2 font-medium">Estagnado (%)</th>
+                                        <th class="pb-2 font-medium text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/60 font-mono text-slate-700 dark:text-slate-300">
+                                    <!-- Dynamic rows via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="mt-8 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <div>
+                    <strong>Minicurso IoT - UFC</strong> &copy; <span id="footer-year">2026</span> - Sistema de Monitoramento IoT Hídrico.
+                </div>
+                <div class="flex items-center gap-4 text-slate-400">
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-wifi text-emerald-500"></i> ThingSpeak Live API</span>
+                    <span>Canal: XXXXXX</span>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <script>
-        const h = 81 //Altura total da base do reservatório até o sensor ultrawssônico;
-        fetch('https://api.thingspeak.com/channels/CANAL_API/fields/1?api_key=CHAVE_API')
-        .then(response=>response.json())
-        .then(data =>{
-            const gap = 21 //Espaço entre o sensor ultrassônico e o nível máximo que a água pode atingir
-            const profundidade = data.feeds[data.feeds.length -1].field1
-            const percent = ((h - profundidade) / (h - gap)) * 100
-            return percent
-        }).then(percent => {
-            console.log(percent)
-            console.log(percent)
-        const variableValue = document.getElementById("variableValue");
-        const waterLevel = document.getElementById("waterLevel");
+    <!-- CONFIGURATION MODAL -->
+    <div id="config-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-5">
+            
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-aqua-500"></i>
+                    Configurações Globais
+                </h3>
+                <button id="btn-close-config" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
-            const value = percent.toFixed(2);
-            variableValue.textContent = percent.toFixed(2);
-            const waterHeight = percent; // ajuste conforme necessário
-            waterLevel.style.height = `${waterHeight}%`;
-        })
- 
+            <!-- Capacity Selector -->
+            <div class="space-y-2">
+                <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Capacidade Nominal Total (Litros)
+                </label>
+                <select id="config-capacity-select" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-aqua-500">
+                    <option value="1000" selected>1.000 Litros (Padrão)</option>
+                    <option value="3000">3.000 Litros</option>
+                    <option value="5000">5.000 Litros</option>
+                    <option value="10000">10.000 Litros</option>
+                </select>
+            </div>
+
+            <!-- Physical Parameters Display (Read only) -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+                <span class="font-bold text-slate-800 dark:text-slate-200 block mb-1">Constantes do Sensor Físico:</span>
+                <p>• <code class="font-bold text-aqua-600">altura = 81 cm</code> (Distância quando totalmente vazia)</p>
+                <p>• <code class="font-bold text-aqua-600">gap = 19 cm</code> (Distância mínima/topo da água)</p>
+                <p>• <code class="font-bold text-aqua-600">altura_util = 62 cm</code> (81cm - 19cm)</p>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="pt-2 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+                <button id="btn-save-config" class="w-full py-2.5 bg-aqua-600 hover:bg-aqua-500 text-white font-semibold text-sm rounded-xl shadow transition">
+                    Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC SCRIPT -->
+    <script>
+        // Sensor Physical Constants from user's script
+        const altura = 81; // Total distance from sensor to bottom of empty tank (cm)
+        const gap = 19;    // Distance from sensor to maximum full level (cm)
+        const alturaUtil = altura - gap; // 62 cm
+
+        // App state
+        let tankCapacity = 1000;
+        let updateIntervalSeconds = 30;
+        let countdown = updateIntervalSeconds;
+        let timerId = null;
+        let historyLogs = [];
+
+        // DOM elements
+        const waterFillEl = document.getElementById('water-fill-element');
+        const tankPercentDisplay = document.getElementById('tank-percent-display');
+        const tankWaterHeightSubdisplay = document.getElementById('tank-water-height-subdisplay');
+        const stagnantWarningTag = document.getElementById('stagnant-warning-tag');
+        const tankStatusBadge = document.getElementById('tank-status-badge');
+        const tankStatusText = document.getElementById('tank-status-text');
+
+        const cardLevelPercent = document.getElementById('card-level-percent');
+        const cardRawPercentSub = document.getElementById('card-raw-percent-sub');
+        const cardWaterCm = document.getElementById('card-water-cm');
+        const cardSensorDepth = document.getElementById('card-sensor-depth');
+        const cardVolumeLiters = document.getElementById('card-volume-liters');
+        const cardLastUpdateTime = document.getElementById('card-last-update-time');
+
+        const headerCountdown = document.getElementById('header-countdown');
+        const countdownProgressBar = document.getElementById('countdown-progress-bar');
+        const syncIcon = document.getElementById('sync-icon');
+        const sensorSlider = document.getElementById('sensor-slider');
+        const simDepthLabel = document.getElementById('sim-depth-label');
+        const historyTableBody = document.getElementById('history-table-body');
+
+        // Modal
+        const configModal = document.getElementById('config-modal');
+        const btnOpenConfig = document.getElementById('btn-open-config');
+        const btnCloseConfig = document.getElementById('btn-close-config');
+        const btnSaveConfig = document.getElementById('btn-save-config');
+        const configCapacitySelect = document.getElementById('config-capacity-select');
+
+        // Buttons
+        const btnRefreshNow = document.getElementById('btn-refresh-now');
+        const btnThemeToggle = document.getElementById('btn-theme-toggle');
+
+        // Theme Logic
+        function initTheme() {
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        btnThemeToggle.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+        });
+
+        function formatNumber(num) {
+            return num.toLocaleString('pt-BR');
+        }
+
+        /**
+         * Core Calculation Function based on script requirements
+         * @param {number} profundidade Distance returned by sensor field3 (in cm)
+         */
+        function processSensorReading(profundidade, readingTimeStr = null) {
+            // Raw calculation formula from user script: ((altura - profundidade) / (altura - gap)) * 100
+            const rawPercent = ((altura - profundidade) / (altura - gap)) * 100;
+
+            // Clamping rules (Estagnação nos limites máximo e mínimo)
+            // If rawPercent < 0 (profundidade > altura 81cm) -> Clamped to 0%
+            // If rawPercent > 100 (profundidade < gap 19cm) -> Clamped to 100%
+            const clampedPercent = Math.min(100, Math.max(0, rawPercent));
+
+            // Useful water column height in cm
+            const waterHeightCm = Math.min(alturaUtil, Math.max(0, altura - profundidade));
+
+            // Estimated liters
+            const liters = Math.round((clampedPercent / 100) * tankCapacity);
+
+            // Determine Stagnation & Status Text
+            let statusText = 'Normal';
+            let isStagnant = false;
+            let statusBadgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300';
+
+            if (rawPercent > 100) {
+                isStagnant = true;
+                statusText = 'Estagnado no Máximo (100%)';
+                statusBadgeClass = 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/40 dark:text-cyan-300';
+            } else if (rawPercent < 0) {
+                isStagnant = true;
+                statusText = 'Estagnado no Mínimo (0%)';
+                statusBadgeClass = 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300';
+            } else if (clampedPercent <= 15) {
+                statusText = 'Nível Crítico';
+                statusBadgeClass = 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300';
+            } else if (clampedPercent <= 30) {
+                statusText = 'Nível Baixo';
+                statusBadgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
+            }
+
+            // Update UI elements
+            waterFillEl.style.height = `${clampedPercent}%`;
+            tankPercentDisplay.textContent = `${clampedPercent.toFixed(2)}%`;
+            tankWaterHeightSubdisplay.textContent = `Coluna: ${waterHeightCm.toFixed(1)} cm / ${alturaUtil} cm`;
+
+            if (isStagnant) {
+                stagnantWarningTag.classList.remove('hidden');
+                stagnantWarningTag.textContent = rawPercent > 100 ? 'Limite Máx: Estagnado 100%' : 'Limite Mín: Estagnado 0%';
+            } else {
+                stagnantWarningTag.classList.add('hidden');
+            }
+
+            tankStatusBadge.className = `px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${statusBadgeClass}`;
+            tankStatusText.textContent = statusText;
+
+            // Cards
+            cardLevelPercent.textContent = `${clampedPercent.toFixed(2)}%`;
+            cardRawPercentSub.textContent = `Calculado: ${rawPercent.toFixed(2)}% ${isStagnant ? '(Estagnado)' : ''}`;
+            cardWaterCm.textContent = waterHeightCm.toFixed(1);
+            cardSensorDepth.textContent = Number(profundidade).toFixed(1);
+            cardVolumeLiters.textContent = formatNumber(liters);
+
+            const nowStr = readingTimeStr || new Date().toLocaleTimeString('pt-BR');
+            cardLastUpdateTime.innerHTML = `<i class="fa-regular fa-clock"></i> Leitura: ${nowStr}`;
+
+            // Sync simulation slider display
+            sensorSlider.value = Math.max(0, Math.min(100, profundidade));
+            simDepthLabel.textContent = `${Number(profundidade).toFixed(1)} cm`;
+
+            // Add Entry to history log
+            addHistoryEntry(nowStr, Number(profundidade).toFixed(1), rawPercent.toFixed(2), clampedPercent.toFixed(2), statusText);
+        }
+
+        // Fetch data from ThingSpeak API (as in user's original script)
+        function fetchThingSpeakData() {
+            syncIcon.classList.add('animate-spin');
+            
+            fetch('https://api.thingspeak.com/channels/CHANNEL_ID/fields/1?api_key=CHAVE_API')
+                .then(response => {
+                    if (!response.ok) throw new Error('Falha na resposta da API');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.feeds && data.feeds.length > 0) {
+                        const lastFeed = data.feeds[data.feeds.length - 1];
+                        const profundidadeVal = parseFloat(lastFeed.field1);
+                        
+                        let timeFormatted = null;
+                        if (lastFeed.created_at) {
+                            const dateObj = new Date(lastFeed.created_at);
+                            timeFormatted = dateObj.toLocaleTimeString('pt-BR');
+                        }
+
+                        if (!isNaN(profundidadeVal)) {
+                            processSensorReading(profundidadeVal, timeFormatted);
+                        } else {
+                            console.warn('Valor de field1 inválido recebido.');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao consultar ThingSpeak:', error);
+                    tankStatusText.textContent = 'Erro de Conexão API';
+                })
+                .finally(() => {
+                    setTimeout(() => syncIcon.classList.remove('animate-spin'), 600);
+                });
+        }
+
+        // History Log Renderer
+        function addHistoryEntry(time, depthCm, rawP, clampedP, status) {
+            historyLogs.unshift({ time, depthCm, rawP, clampedP, status });
+            if (historyLogs.length > 5) historyLogs.pop();
+
+            historyTableBody.innerHTML = '';
+            historyLogs.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
+                tr.innerHTML = `
+                    <td class="py-2.5 text-slate-500 dark:text-slate-400">${item.time}</td>
+                    <td class="py-2.5 font-bold text-slate-900 dark:text-slate-100">${item.depthCm} cm</td>
+                    <td class="py-2.5 text-slate-500">${item.rawP}%</td>
+                    <td class="py-2.5 font-bold text-aqua-600 dark:text-aqua-400">${item.clampedP}%</td>
+                    <td class="py-2.5 text-right">
+                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
+                            item.status.includes('Estagnado') ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' :
+                            item.status.includes('Crítico') ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' :
+                            'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
+                        }">${item.status}</span>
+                    </td>
+                `;
+                historyTableBody.appendChild(tr);
+            });
+        }
+
+        // Timer Loop (30 Seconds)
+        function startTimer() {
+            if (timerId) clearInterval(timerId);
+            timerId = setInterval(() => {
+                countdown--;
+                headerCountdown.textContent = countdown;
+                const progressPercent = (countdown / updateIntervalSeconds) * 100;
+                countdownProgressBar.style.width = `${progressPercent}%`;
+
+                if (countdown <= 0) {
+                    fetchThingSpeakData();
+                    resetCountdown();
+                }
+            }, 1000);
+        }
+
+        function resetCountdown() {
+            countdown = updateIntervalSeconds;
+            headerCountdown.textContent = countdown;
+            countdownProgressBar.style.width = '100%';
+        }
+
+        // Manual depth simulation for bounds testing
+        window.simulateSensorDepth = function(cm) {
+            processSensorReading(cm);
+            resetCountdown();
+        }
+
+        // Slider listener
+        sensorSlider.addEventListener('input', (e) => {
+            const depthVal = parseFloat(e.target.value);
+            simDepthLabel.textContent = `${depthVal.toFixed(1)} cm`;
+            processSensorReading(depthVal);
+        });
+        sensorSlider.addEventListener('change', () => {
+            resetCountdown();
+        });
+
+        // Manual refresh button
+        btnRefreshNow.addEventListener('click', () => {
+            fetchThingSpeakData();
+            resetCountdown();
+        });
+
+        // Modal Controls
+        btnOpenConfig.addEventListener('click', () => configModal.classList.remove('hidden'));
+        btnCloseConfig.addEventListener('click', () => configModal.classList.add('hidden'));
+        btnSaveConfig.addEventListener('click', () => {
+            tankCapacity = parseInt(configCapacitySelect.value, 10);
+            configModal.classList.add('hidden');
+            fetchThingSpeakData();
+        });
+
+        // Init App on load
+        window.onload = function() {
+            initTheme();
+            fetchThingSpeakData();
+            startTimer();
+            document.getElementById('footer-year').textContent = new Date().getFullYear();
+        };
     </script>
 </body>
 </html>
