@@ -444,8 +444,8 @@
                     Capacidade Nominal Total (Litros)
                 </label>
                 <select id="config-capacity-select" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-aqua-500">
-                    <option value="1000" selected>1.000 Litros (Padrão)</option>
-                    <option value="3000">3.000 Litros</option>
+                    <option value="500" selected>500 Litros (Padrão)</option>
+                    <option value="1000">1.000 Litros</option>
                     <option value="5000">5.000 Litros</option>
                     <option value="10000">10.000 Litros</option>
                 </select>
@@ -476,7 +476,7 @@
         const alturaUtil = altura - gap; // 62 cm
 
         // App state
-        let tankCapacity = 1000;
+        let tankCapacity = 500;
         let updateIntervalSeconds = 30;
         let countdown = updateIntervalSeconds;
         let timerId = null;
